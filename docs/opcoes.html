@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "gals";
             const default_dark_theme = "gals";
-            window.path_to_searchindex_js = "searchindex-546eb85d.js";
+            window.path_to_searchindex_js = "searchindex-3591284a.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-96c027f1.js"></script>
@@ -241,13 +241,13 @@ Para Python e Rust é possível especificar o <em>module</em> das classes, onde 
 <tr><td>C++</td><td>Stream</td><td>std::istream</td></tr>
 <tr><td>Delphi</td><td>Stream</td><td>TStream</td></tr>
 <tr><td>Python</td><td>Stream</td><td>io.StringIO</td></tr>
-<tr><td>Rust</td><td>Stream</td><td>???</td></tr>
+<tr><td>Rust</td><td>Stream</td><td>std::fs::BufReader</td></tr>
 <tr><td>–</td><td>–</td><td>–</td></tr>
 <tr><td>Java</td><td>String</td><td>String</td></tr>
 <tr><td>C++</td><td>String</td><td>std::string</td></tr>
 <tr><td>Delphi</td><td>String</td><td>string</td></tr>
 <tr><td>Python</td><td>String</td><td>str</td></tr>
-<tr><td>Rust</td><td>String</td><td>???</td></tr>
+<tr><td>Rust</td><td>String</td><td>String</td></tr>
 </tbody>
 </table>
 </div>
@@ -256,7 +256,7 @@ Para Python e Rust é possível especificar o <em>module</em> das classes, onde 
 <p>A implementação do modo <em>Stream</em> para C++, Java e Delphi, no momento, simplesmente
 leem o arquivo todo e o convertem para String, quebrando a expectativa de leitura gradual
 esperada de tal sistema.</p>
-<p>A implementação para Python faz uso correto das <em>Streams</em>, porém vaza memória devido a necessidade
+<p>A implementação para Python e Rust faz uso correto das <em>Streams</em>, porém acumula memória devido a necessidade
 de backtracking arbitrário por parte do lexer, então em quesito de <strong>uso de memória</strong> ele é identico a versão modo <em>String</em>.</p>
 </blockquote>
 <h4 id="modal---implementação-do-autômato"><a class="header" href="#modal---implementação-do-autômato">Modal - Implementação do Autômato</a></h4>

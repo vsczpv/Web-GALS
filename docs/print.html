@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "gals";
             const default_dark_theme = "gals";
-            window.path_to_searchindex_js = "searchindex-546eb85d.js";
+            window.path_to_searchindex_js = "searchindex-3591284a.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-96c027f1.js"></script>
@@ -289,13 +289,13 @@ Para Python e Rust é possível especificar o <em>module</em> das classes, onde 
 <tr><td>C++</td><td>Stream</td><td>std::istream</td></tr>
 <tr><td>Delphi</td><td>Stream</td><td>TStream</td></tr>
 <tr><td>Python</td><td>Stream</td><td>io.StringIO</td></tr>
-<tr><td>Rust</td><td>Stream</td><td>???</td></tr>
+<tr><td>Rust</td><td>Stream</td><td>std::fs::BufReader</td></tr>
 <tr><td>–</td><td>–</td><td>–</td></tr>
 <tr><td>Java</td><td>String</td><td>String</td></tr>
 <tr><td>C++</td><td>String</td><td>std::string</td></tr>
 <tr><td>Delphi</td><td>String</td><td>string</td></tr>
 <tr><td>Python</td><td>String</td><td>str</td></tr>
-<tr><td>Rust</td><td>String</td><td>???</td></tr>
+<tr><td>Rust</td><td>String</td><td>String</td></tr>
 </tbody>
 </table>
 </div>
@@ -304,7 +304,7 @@ Para Python e Rust é possível especificar o <em>module</em> das classes, onde 
 <p>A implementação do modo <em>Stream</em> para C++, Java e Delphi, no momento, simplesmente
 leem o arquivo todo e o convertem para String, quebrando a expectativa de leitura gradual
 esperada de tal sistema.</p>
-<p>A implementação para Python faz uso correto das <em>Streams</em>, porém vaza memória devido a necessidade
+<p>A implementação para Python e Rust faz uso correto das <em>Streams</em>, porém acumula memória devido a necessidade
 de backtracking arbitrário por parte do lexer, então em quesito de <strong>uso de memória</strong> ele é identico a versão modo <em>String</em>.</p>
 </blockquote>
 <h4 id="modal---implementação-do-autômato"><a class="header" href="#modal---implementação-do-autômato">Modal - Implementação do Autômato</a></h4>
@@ -780,7 +780,31 @@ with open('program.txt') as file:
 
 </code></pre>
 <h5 id="rust"><a class="header" href="#rust">Rust</a></h5>
-<p><em>TDB</em></p>
+<pre class="playground"><code class="language-rust">use std::{fs::File, io::BufReader};
+
+use crate::{
+    scanner::Lexico,
+    parser::Sintatico,
+    codegen::Semantico
+};
+
+mod token;
+mod errors;
+mod constants;
+mod scanner;
+mod parser;
+mod codegen;
+
+fn main() {
+    let file = File::open("program.txt").expect("erro ao abrir arquivo");
+    let lex = Lexico::new(BufReader::new(file));
+    let sem = Semantico::new();
+    let syn = Sintatico::new(lex, sem);
+
+    if let Err(e) = syn.parse() {
+        eprintln!("{e}");
+    }
+}</code></pre>
 <h2 id="detalhes-do-código"><a class="header" href="#detalhes-do-código">Detalhes do código</a></h2>
 <p>Dado a semelhança entre as implementações, será somente exemplificado trechos de código em Java.
 Quaisqueres diferenças podem ser inferidas lendo o código fonte.</p>
@@ -835,7 +859,9 @@ catch ( LexicalError e )
 <pre>constructor create</pre>
 </td><td>
 <pre>def <strong>init</strong>(self, input: TipoEntrada = None)</pre>
-</td><td>???</td></tr>
+</td><td>
+<pre>fn new(lex: Lexico, sem: Semantico&lt;TipoEntrada&gt;) -&gt; Self</pre>
+</td></tr>
 <tr><td>
 <pre>Lexico(TipoEntrada)</pre>
 </td><td>
@@ -844,7 +870,9 @@ catch ( LexicalError e )
 <pre>constructor create(input : TStream)</pre>
 </td><td>
 <pre>def <strong>init</strong>(self, input: TipoEntrada = None)</pre>
-</td><td>???</td></tr>
+</td><td>
+<pre>N/A</pre>
+</td></tr>
 <tr><td>
 <pre>void setInput(TipoEntrada)</pre>
 </td><td>
@@ -853,7 +881,9 @@ catch ( LexicalError e )
 <pre>procedure setInput(input : TStream)</pre>
 </td><td>
 <pre>def set_input(self, input: TipoEntrada)</pre>
-</td><td>???</td></tr>
+</td><td>
+<pre>N/A</pre>
+</td></tr>
 <tr><td>
 <pre>void setPosition(int)</pre>
 </td><td>
@@ -862,7 +892,9 @@ catch ( LexicalError e )
 <pre>procedure setPosition(pos : integer)</pre>
 </td><td>
 <pre>def set_position(self, pos)</pre>
-</td><td>???</td></tr>
+</td><td>
+<pre>N/A</pre>
+</td></tr>
 <tr><td>
 <pre>Token nextToken()</pre>
 </td><td>
@@ -871,7 +903,9 @@ catch ( LexicalError e )
 <pre>function nextToken : TToken</pre>
 </td><td>
 <pre>def next_token(self)</pre>
-</td><td>???</td></tr>
+</td><td>
+<pre>fn next_token(&amp;mut self) -&gt; Option&lt;Result&lt;Token, AnalysisError&gt;&gt;</pre>
+</td></tr>
 <tr><td>
 <pre>String getLexeme()</pre>
 </td><td>
@@ -880,7 +914,9 @@ catch ( LexicalError e )
 <pre>function getLexeme : string</pre>
 </td><td>
 <pre>lexeme: str</pre>
-</td><td>???</td></tr>
+</td><td>
+<pre>fn get_lexeme(&amp;self) -&gt; &amp;String</pre>
+</td></tr>
 <tr><td>
 <pre>int getPosition()</pre>
 </td><td>
@@ -889,7 +925,9 @@ catch ( LexicalError e )
 <pre>function getPosition : integer</pre>
 </td><td>
 <pre>position: int</pre>
-</td><td>???</td></tr>
+</td><td>
+<pre>fn get_position(&amp;self) -&gt; usize</pre>
+</td></tr>
 <tr><td>
 <pre>int getId()</pre>
 </td><td>
@@ -898,13 +936,16 @@ catch ( LexicalError e )
 <pre>function getId : integer</pre>
 </td><td>
 <pre>tkid: TokenId</pre>
-</td><td>???</td></tr>
+</td><td>
+<pre>fn get_id(&amp;self) -&gt; TokenId</pre>
+</td></tr>
 </tbody>
 </table>
 </div>
 <blockquote class="blockquote-tag blockquote-tag-note">
 <p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
-<p>A função Python <code>def set_position(self, pos)</code> não existe caso o tipo de entrada seja Stream.</p>
+<p>A função Python <code>def set_position(self, pos)</code> não existe caso o tipo de entrada seja Stream,
+e a implementação para Rust não expõe tal função.</p>
 </blockquote>
 <h3 id="detalhes-do-analisador-sintatico"><a class="header" href="#detalhes-do-analisador-sintatico">Detalhes do analisador Sintatico</a></h3>
 <p>O analisador sintático possui apenas um método público (além de seu construtor padrão):</p>
@@ -968,7 +1009,9 @@ Existe ainda uma quarta classe <code>AnalysisError</code>, que serve de base par
 <pre>function getPosition : integer</pre>
 </td><td>
 <pre>position: int</pre>
-</td><td>???</td></tr>
+</td><td>
+<pre>fn get_position(&amp;self) -&gt; usize</pre>
+</td></tr>
 <tr><td>
 <pre>String toString()</pre>
 </td><td>
@@ -977,10 +1020,44 @@ Existe ainda uma quarta classe <code>AnalysisError</code>, que serve de base par
 <pre>function getMessage : string</pre>
 </td><td>
 <pre>message: str</pre>
-</td><td>???</td></tr>
+</td><td>
+<pre>fn get_message(&amp;self) -&gt; String</pre>
+</td></tr>
 </tbody>
 </table>
 </div>
+<p>O tratamento de erros em Rust é um pouco diferente. Ao invéz de se lançar uma exceção, a função deve retornar o tipo <code>Result&lt;T, E&gt;</code>, onde <code>T</code> é o retorno normal
+da função e <code>E</code> é o tipo do erro.</p>
+<p>Enquanto nas outras quatro implementações, <code>LexicalError</code>, <code>SyntacticError</code> e <code>SemanticError</code> são subclasses de <code>AnalysisError</code>,
+na implementação em Rust existem somente <code>AnalysisError</code> como uma classe concreta, sendo a distinção entre as três variantes feita via uma enumeração.</p>
+<p>Em sumo, todas as funções que propagam erro retornam <code>Result&lt;T, AnalysisError&gt;</code>.</p>
+<p>Como conveniência, as funções <code>AnalysisError::lexical()</code>, <code>AnalysisError::sintatic()</code> e <code>AnalysisError::semantic()</code> existem para criar
+um erro do tipo correspondente.</p>
+<pre class="playground"><code class="language-rust">fn inner() -&gt; Result&lt;(), AnalysisError&gt; {
+	return Err(AnalysisError::semantic("mensagem".into(), 1));
+}
+
+
+fn outer() -&gt; Result&lt;i32, AnalysisError&gt; {
+	inner()?; // o operador ? causa o retorno antecipado caso haja erro, similar a uma exceção.
+	return Ok(1234);
+}
+
+fn main() {
+	let res = match outer() {
+		Ok(r) =&gt; r,
+		Err(e) =&gt; {
+			match e.get_kind() {
+				AnalysisErrorKind::Lexical =&gt; {...},
+				AnalysisErrorKind::Syntatic =&gt; {...},
+				AnalysisErrorKind::Semantic =&gt; {...},
+			},
+		}
+	};
+
+	// ou simplesmente
+	// let res = outer()?;
+}</code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="árvore-sintática-em-memória"><a class="header" href="#árvore-sintática-em-memória">Árvore Sintática em Memória</a></h1>
 <p><em>Ainda não implementado.</em></p>
